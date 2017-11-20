@@ -3,12 +3,6 @@
 var _ = require('lodash');
 
 var levelMapping = {};
-levelMapping[bunyan.TRACE] = 'debug';
-levelMapping[bunyan.DEBUG] = 'debug';
-levelMapping[bunyan.INFO] = 'info';
-levelMapping[bunyan.WARN] = 'warning';
-levelMapping[bunyan.ERROR] = 'error';
-levelMapping[bunyan.FATAL] = 'critical';
 
 var BunyanRollbar = function() {
   this.initialize.apply(this, arguments);
@@ -17,11 +11,17 @@ var BunyanRollbar = function() {
 _.extend(BunyanRollbar.prototype, {
   initialize: function(options) {
     options = options || {};
-    if(options.rollbar) {
-      this.rollbar = options.rollbar;
-    } else {
-      throw new error('rollbar instance required')
+    if(!options.rollbar || !options.bunyan) {
+      throw new error('rollbar and bunyan instance required')
     }
+    this.rollbar = options.rollbar;
+    var bunyan = options.bunyan;
+    levelMapping[bunyan.TRACE] = 'debug';
+    levelMapping[bunyan.DEBUG] = 'debug';
+    levelMapping[bunyan.INFO] = 'info';
+    levelMapping[bunyan.WARN] = 'warning';
+    levelMapping[bunyan.ERROR] = 'error';
+    levelMapping[bunyan.FATAL] = 'critical';
   },
 
   write: function(record) {
@@ -73,31 +73,4 @@ _.extend(BunyanRollbar.prototype, {
   },
 });
 
-// Define our own copy of the bunyan.stdSerializers but patch the 'err' and
-// 'req' serializers so we can maintain access to the original error or request
-// objects for sending to Rollbar (since Rollbar's API has it's own custom
-// handling of those two types of objects).
-var serializers = _.clone(bunyan.stdSerializers);
-['err', 'req'].forEach(function(serializer) {
-  var originalSerializer = bunyan.stdSerializers[serializer];
-  serializers[serializer] = function(object) {
-    // Call the original serializer.
-    var serialized = originalSerializer(object);
-
-    // If the original serializer did serialize this object, store the original
-    // object on a special '_bunyanRollbarOriginalObject' property of the
-    // serialized object. Using defineProperty should ensure that this object
-    // is available for us to access, but won't show up in the JSON
-    // serialization of the serialized data.
-    if(serialized !== object && _.isPlainObject(serialized)) {
-      Object.defineProperty(serialized, '_bunyanRollbarOriginalObject', {
-        value: object,
-      });
-    }
-
-    return serialized;
-  };
-});
-
-module.exports.stdSerializers = serializers;
 module.exports.Stream = BunyanRollbar;
