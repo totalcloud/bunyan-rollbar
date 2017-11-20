@@ -7,7 +7,6 @@
     "test": "grunt"
   },
   "dependencies": {
-    "bunyan": "~1.2.1",
     "lodash": "~2.4.1"
   },
   "repository": {
