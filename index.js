@@ -1,7 +1,6 @@
 'use strict';
 
 var _ = require('lodash'),
-    bunyan = require('bunyan');
 
 var levelMapping = {};
 levelMapping[bunyan.TRACE] = 'debug';
@@ -21,8 +20,7 @@ _.extend(BunyanRollbar.prototype, {
     if(options.rollbar) {
       this.rollbar = options.rollbar;
     } else {
-      this.rollbar = require('rollbar');
-      this.rollbar.init(options.rollbarToken, options.rollbarOptions);
+      throw new error('rollbar instance required')
     }
   },
 

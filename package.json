@@ -8,17 +8,7 @@
   },
   "dependencies": {
     "bunyan": "~1.2.1",
-    "lodash": "~2.4.1",
-    "rollbar": "~0.4.0"
-  },
-  "devDependencies": {
-    "chai": "~1.9.2",
-    "grunt": "~0.4.5",
-    "grunt-cli": "~0.1.13",
-    "grunt-contrib-jshint": "~0.10.0",
-    "grunt-mocha-test": "~0.12.2",
-    "mversion": "~1.7.0",
-    "sinon": "~1.11.1"
+    "lodash": "~2.4.1"
   },
   "repository": {
     "type": "git",
